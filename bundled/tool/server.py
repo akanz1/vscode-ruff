@@ -278,7 +278,7 @@ def _run_tool_on_document(
     else:
         argv += [document.path]
 
-    if use_path:
+    if use_path or not use_rpc:
         # This mode is used when running executables.
         log_to_output(" ".join(argv))
         log_to_output(f"CWD Server: {cwd}")
@@ -290,7 +290,7 @@ def _run_tool_on_document(
         )
         if result.stderr:
             log_to_output(result.stderr)
-    elif use_rpc:
+    else:
         # This mode is used if the interpreter running this server is different from
         # the interpreter used for running this server.
         log_to_output(" ".join(settings["interpreter"] + ["-m"] + argv))
@@ -310,19 +310,6 @@ def _run_tool_on_document(
             result = utils.RunResult(result.stdout, result.stderr)
         elif result.stderr:
             log_to_output(result.stderr)
-    else:
-        # This mode is used when running executables.
-        log_to_output(" ".join(argv))
-        log_to_output(f"CWD Server: {cwd}")
-        result = utils.run_path(
-            argv=argv,
-            use_stdin=use_stdin,
-            cwd=cwd,
-            source=document.source.replace("\r\n", "\n"),
-        )
-        if result.stderr:
-            log_to_output(result.stderr)
-
     log_to_output(f"{document.uri} :\r\n{result.stdout}")
     return result
 
